@@ -27,9 +27,9 @@ def make_security_master(n_securities: int = 8) -> pd.DataFrame:
     rows = [
         {
             "ticker": f"SYN{i:02d}",
-            "permaticker": 100_000 + i,
+            "security_id": 100_000 + i,
             "exchange": "NASDAQ" if i % 2 else "NYSE",
-            "category": "Domestic Common Stock",
+            "category": "common_stock",
             "is_delisted": i == n_securities - 1,
         }
         for i in range(n_securities)
@@ -37,9 +37,9 @@ def make_security_master(n_securities: int = 8) -> pd.DataFrame:
     rows.append(
         {
             "ticker": "SYNBM",
-            "permaticker": 199_999,
-            "exchange": "NYSEARCA",
-            "category": "ETF",
+            "security_id": 199_999,
+            "exchange": "NYSE_ARCA",
+            "category": "etf",
             "is_delisted": False,
         }
     )
@@ -67,7 +67,7 @@ def make_prices(master: pd.DataFrame, sessions: Sequence[date], seed: int = 7) -
                     "high": high,
                     "low": low,
                     "close": close,
-                    "closeadj": close,
+                    "adj_close": close,
                     "volume": rng.integers(200_000, 2_000_000, length),
                     "available_at": _local_to_utc(dates, PRICE_PUBLISH_TIME_LOCAL),
                 }
@@ -81,7 +81,7 @@ def make_fundamentals(
 ) -> pd.DataFrame:
     """Quarterly fundamentals filed 25-75 days after period end, plus one restatement."""
     rng = np.random.default_rng(seed)
-    stocks = master.loc[master["category"] != "ETF", "ticker"]
+    stocks = master.loc[master["category"] != "etf", "ticker"]
     quarter_ends = pd.date_range(
         start=pd.Timestamp(sessions[0]) - pd.offsets.QuarterEnd(2),
         end=pd.Timestamp(sessions[-1]),

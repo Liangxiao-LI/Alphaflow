@@ -9,7 +9,7 @@ Changing any value is a contract change. Bump `version`, add a row to the change
 | Term | Definition (v1) |
 | --- | --- |
 | Exchange timezone | `America/New_York`. All local times are DST-aware; stored timestamps are UTC |
-| Trading calendar | Sessions observed in the curated **benchmark (SPY) price series**. No hard-coded holiday list |
+| Trading calendar | Sessions observed in the curated **benchmark price series**. No hard-coded holiday list |
 | `as_of_date` (D) | A trading session whose closing data the prediction is based on |
 | Signal cutoff | **D at 20:00 ET**. Inputs must satisfy `available_at <= cutoff(D)` |
 | Execution | **Close of the next session (D+1)**, an assumed market-on-close fill |
@@ -17,9 +17,9 @@ Changing any value is a contract change. Bump `version`, add a row to the change
 | Label window | Close(D+1) → Close(D+21) |
 | Label maturity | Label for D becomes usable at the signal cutoff of D+21 |
 
-The 20:00 ET cutoff is provisional. It must be later than the vendor's observed publication time (see [DATA_ACCESS.md §1](DATA_ACCESS.md#1-how-to-verify-entitlements)). If daily data typically lands later, move the cutoff rather than allowing late data.
+The 20:00 ET cutoff is provisional. It must be later than the vendor's observed publication time (see [DATA_ACCESS.md §1](DATA_ACCESS.md#1-how-to-verify-data-access)). If daily data typically lands later, move the cutoff rather than allowing late data.
 
-**Why next-session close rather than next open:** the vendor provides a total-return-adjusted *close* (`closeadj`) but no equivalently adjusted open. Close-to-close keeps features, labels and benchmark on one adjustment convention. It also avoids assuming a trade on D's close, which happens before the features exist.
+**Why next-session close:** it avoids assuming a trade on D's close, which happens before the features exist, and close-to-close keeps features, labels and benchmark on one price convention. Whether a verified table supplies an adjusted close (and not an adjusted open) is not yet verified; revisit this choice once the matrix in DATA_ACCESS.md is filled in.
 
 ### Worked example
 
@@ -36,20 +36,23 @@ The DST change on 2026-11-01 alters the UTC offset between the cutoff and maturi
 ## 2. Label
 
 ```
-y(i, D) = [closeadj(i, D+21) / closeadj(i, D+1) - 1] - [closeadj(SPY, D+21) / closeadj(SPY, D+1) - 1]
+y(i, D) = [adj_close(i, D+21) / adj_close(i, D+1) - 1] - [adj_close(SPY, D+21) / adj_close(SPY, D+1) - 1]
 ```
 
-- Total-return basis (split- and dividend-adjusted `closeadj`) for both the security and the benchmark.
-- **Delisting inside the window:** use the last available `closeadj` plus any delisting proceeds from `ACTIONS` if available. Otherwise the label is missing and the case is counted in a reported `delisted_in_window` diagnostic. It is never silently dropped.
+- `adj_close` is AlphaFlow's curated split- and dividend-adjusted close. Which vendor field maps to it is decided only after verification.
+- Total-return basis for both the security and the benchmark. The benchmark is SPY by design; that a verified table contains SPY is not yet verified.
+- **Delisting inside the window:** use the last available `adj_close` plus any delisting proceeds if a verified source provides them. Otherwise the label is missing and the case is counted in a reported `delisted_in_window` diagnostic. It is never silently dropped.
 - Labels are generated only after maturity and are never inference inputs.
 
 ## 3. Universe (evaluated at each D using only data available at cutoff(D))
 
+Values use AlphaFlow's own curated codes. M2 maps verified vendor values onto them; no vendor vocabulary is assumed here.
+
 | Rule | v1 value | Notes |
 | --- | --- | --- |
-| Exchanges | NYSE, NASDAQ, NYSEMKT | Taken from the security master (a current snapshot; see DATA_ACCESS §4) |
-| Security category | Domestic Common Stock | Excludes ETFs, ADRs, preferreds, warrants and funds |
-| Minimum price | `closeunadj(D) >= $5` | Unadjusted, so it is not distorted by later splits |
+| Exchanges | `NYSE`, `NASDAQ`, `NYSE_AMERICAN` | From the security master. Whether it is historical or a current snapshot is not yet verified |
+| Security category | `common_stock` | Excludes ETFs, ADRs, preferreds, warrants and funds |
+| Minimum price | unadjusted `close(D) >= $5` | Unadjusted, so it is not distorted by later splits |
 | Liquidity | Median(close × volume) over the last 20 sessions ≥ $5M | Unadjusted dollar volume |
 | History | ≥ 252 sessions of price history at D | Required for 12-month features |
 | Delisted names | Included while they traded | Membership never depends on future survival |
@@ -69,4 +72,4 @@ y(i, D) = [closeadj(i, D+21) / closeadj(i, D+1) - 1] - [closeadj(SPY, D+21) / cl
 
 | Version | Date | Change |
 | --- | --- | --- |
-| 1 | 2026-10-29 | Initial contract |
+| 1 | 2026-10-29 | Initial contract, with vendor-neutral field names and codes |

@@ -21,9 +21,6 @@ dev = [
     "ruff>=0.6",
 ]
 
-[project.scripts]
-alphaflow-entitlements = "alphaflow.ingestion.entitlements:main"
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/alphaflow"]
 

@@ -19,15 +19,16 @@ execution:
 
 label:
   horizon_trading_days: 20
-  # Excess total return: (security closeadj return) - (benchmark closeadj return)
+  # Excess total return: (security adj_close return) - (benchmark adj_close return)
   # from the execution-session close to the close `horizon_trading_days` sessions later.
   return_type: total_return
   benchmark: SPY
 
 universe:
   # Evaluated at each as_of_date using only information available at the signal cutoff.
-  exchanges: [NYSE, NASDAQ, NYSEMKT]
-  security_categories: ["Domestic Common Stock"]
+  # AlphaFlow curated codes; vendor values are mapped onto these only after verification.
+  exchanges: [NYSE, NASDAQ, NYSE_AMERICAN]
+  security_categories: [common_stock]
   min_close_price: 5.0
   min_median_dollar_volume: 5000000
   dollar_volume_window_sessions: 20

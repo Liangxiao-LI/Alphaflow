@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: help install lint format test check entitlements clean
+.PHONY: help install lint format test check clean
 
 help:
 	@echo "install       Install the package with dev dependencies (editable)"
@@ -8,7 +8,6 @@ help:
 	@echo "format        Apply Ruff fixes and formatting"
 	@echo "test          Run the pytest suite (synthetic data only)"
 	@echo "check         lint + test (what CI runs)"
-	@echo "entitlements  Probe Nasdaq dataset access (needs NASDAQ_API_KEY)"
 
 install:
 	$(PYTHON) -m pip install -e '.[dev]'
@@ -25,9 +24,6 @@ test:
 	pytest -q -m "not live"
 
 check: lint test
-
-entitlements:
-	$(PYTHON) -m alphaflow.ingestion.entitlements --config configs/entitlements.yaml
 
 clean:
 	rm -rf .pytest_cache .ruff_cache build dist *.egg-info

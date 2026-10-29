@@ -146,7 +146,7 @@ flowchart LR
 - A historical calculation at cutoff `t` may use only records with `available_at <= t` (with timezone and market-hours conventions defined).
 - Do not let restated values replace what a model could have known historically unless the dataset supports vintage/as-reported reconstruction.
 - Historical universe membership must be defined before looking at future outcomes. Consider ticker changes and delistings; report survivorship limitations if the subscription cannot reconstruct these.
-- The exact Nasdaq products and API columns are **unknown until entitlements are checked**. Do not assume access to specific Sharadar tables.
+- The exact Nasdaq products and API columns are **unknown until access is verified** and recorded in [docs/DATA_ACCESS.md](docs/DATA_ACCESS.md). Do not assume access to any specific table.
 
 ## 7. ML contract and evaluation
 

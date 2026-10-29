@@ -90,7 +90,7 @@ def test_universe_rules(contract):
     snapshot = pd.DataFrame(
         {
             "exchange": ["NYSE", "NASDAQ", "NYSE", "OTC", "NYSE", "NASDAQ"],
-            "category": ["Domestic Common Stock"] * 4 + ["ETF", "Domestic Common Stock"],
+            "category": ["common_stock"] * 4 + ["etf", "common_stock"],
             "close": [50.0, 4.0, 50.0, 50.0, 50.0, 50.0],
             "median_dollar_volume": [1e7, 1e7, 1e6, 1e7, 1e7, 1e7],
             "history_sessions": [500, 500, 500, 500, 500, 100],

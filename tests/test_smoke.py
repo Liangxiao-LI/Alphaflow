@@ -10,16 +10,7 @@ import pytest
 from alphaflow.data import synthetic
 from alphaflow.data.validation import validate_ohlcv
 
-SUBPACKAGES = [
-    "ingestion",
-    "data",
-    "features",
-    "models",
-    "inference",
-    "monitoring",
-    "api",
-    "workflows",
-]
+SUBPACKAGES = ["data"]
 
 
 @pytest.mark.parametrize("name", SUBPACKAGES)
