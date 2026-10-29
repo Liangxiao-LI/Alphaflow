@@ -1,0 +1,49 @@
+# --- Secrets -------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Licensed market data (NEVER commit Nasdaq/vendor payloads) ----------
+# Local data lake zones; synthetic fixtures are generated in code instead.
+/data/
+/raw/
+/curated/
+/features/
+/labels/
+/predictions/
+reports/entitlements/
+*.parquet
+*.csv
+*.csv.gz
+*.feather
+*.arrow
+*.zip
+*.duckdb
+*.duckdb.wal
+
+# --- ML tracking ----------------------------------------------------------
+mlruns/
+mlartifacts/
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- OS / editors ---------------------------------------------------------
+.DS_Store
+.idea/
+.vscode/

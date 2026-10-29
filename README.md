@@ -40,6 +40,14 @@ Suggested duration: **8 weeks at roughly 10–15 focused hours/week**, depending
 
 **Done when:** `pytest` and lint checks pass locally/in CI; a documented entitlement matrix identifies supported datasets and any point-in-time limitations; no secrets or licensed market data are committed.
 
+**M0 deliverables:**
+
+- Package scaffold: `pyproject.toml`, `src/alphaflow/`, `Makefile`, `.env.example`, `.gitignore`, and CI in `.github/workflows/ci.yml` (Ruff lint and format, pytest on Python 3.11/3.12).
+- [docs/DATA_ACCESS.md](docs/DATA_ACCESS.md): the entitlement matrix, API limits, point-in-time limitations and licensing rules. `make entitlements` probes account access without storing any data rows.
+- [docs/PREDICTION_CONTRACT.md](docs/PREDICTION_CONTRACT.md) and `configs/prediction_contract.yaml`: the signal cutoff, next-session execution, the 20-day excess-return label and universe rules. These are implemented in `alphaflow.contracts`.
+- Synthetic fixtures (`alphaflow.data.synthetic`) and tests, including repository-hygiene checks for secrets and data files.
+- **Outstanding:** run `make entitlements` with a real key and record the results in the matrix. Until then every dataset is marked *UNVERIFIED*.
+
 ### M1 — Reliable daily data ingestion (Week 1)
 
 - Implement a Nasdaq client with API-key environment configuration, pagination, rate-limit handling, exponential backoff, and timeouts.
@@ -131,7 +139,7 @@ Suggested duration: **8 weeks at roughly 10–15 focused hours/week**, depending
 
 | Milestone | Deliverable                                      | Dependencies        | Status        |
 | --------- | ------------------------------------------------ | ------------------- | ------------- |
-| M0        | Repo, contracts, permissions, synthetic fixtures | None                | ⬜ Not started |
+| M0        | Repo, contracts, permissions, synthetic fixtures | None                | 🟨 Scaffolded — entitlement probe pending |
 | M1        | Resilient incremental ingestion                  | M0                  | ⬜ Not started |
 | M2        | Point-in-time feature snapshots                  | M1                  | ⬜ Not started |
 | M3        | Reproducible training and MLflow lineage         | M2                  | ⬜ Not started |
@@ -143,18 +151,17 @@ Suggested duration: **8 weeks at roughly 10–15 focused hours/week**, depending
 
 ## Getting started (planned)
 
-The commands below are **target developer commands**; implement them as tasks/modules are added. They are not presented as working commands in an empty repository.
+The setup, lint, test and entitlement commands work as of M0. The pipeline entrypoints further down are **planned** and do not exist yet.
 
 ```
-# After implementing pyproject.toml and task entrypoints:
 python -m venv .venv
 source .venv/bin/activate
-pip install -e '.[dev]'
+pip install -e '.[dev]'    # or: make install
 cp .env.example .env       # Add a personal key locally; never commit .env
-ruff check .
-pytest -q
+make check                 # ruff check + ruff format --check + pytest (synthetic data only)
+make entitlements          # Probe Nasdaq table access (needs NASDAQ_API_KEY)
 
-# Example future entrypoints:
+# Example future entrypoints (not implemented yet):
 python -m alphaflow.ingestion.run --date 2026-10-27
 python -m alphaflow.models.train --config configs/train.yaml
 python -m alphaflow.inference.daily_scoring --date 2026-10-27

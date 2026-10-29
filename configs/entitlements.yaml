@@ -1,0 +1,31 @@
+# Candidate Nasdaq Data Link tables to probe with `make entitlements`.
+# Being listed here does NOT mean the subscription includes the table.
+# The probe records HTTP access status and column metadata only; row payloads are discarded.
+api_base: https://data.nasdaq.com/api/v3
+timeout_seconds: 20
+
+candidates:
+  - code: SHARADAR/SEP
+    role: daily_prices
+    purpose: US equity daily OHLCV (primary price source)
+  - code: SHARADAR/SFP
+    role: benchmark_prices
+    purpose: Fund/ETF daily prices (SPY benchmark for excess returns)
+  - code: SHARADAR/SF1
+    role: fundamentals
+    purpose: Company fundamentals with filing-date and as-reported dimensions
+  - code: SHARADAR/TICKERS
+    role: security_master
+    purpose: Stable identifiers, exchange, category, listing/delisting dates
+  - code: SHARADAR/ACTIONS
+    role: corporate_actions
+    purpose: Splits, dividends, ticker changes, delistings
+  - code: SHARADAR/DAILY
+    role: derived_metrics
+    purpose: Daily valuation metrics (optional; may embed restated fundamentals)
+  - code: QUOTEMEDIA/PRICES
+    role: daily_prices
+    purpose: Alternative end-of-day price source
+  - code: ZACKS/FC
+    role: fundamentals
+    purpose: Alternative fundamentals source

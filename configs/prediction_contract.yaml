@@ -1,0 +1,36 @@
+# Prediction timing, label and universe contract (M0).
+# Human-readable rationale: docs/PREDICTION_CONTRACT.md
+# Changing any value here is a contract change: bump `version` and record it in the doc.
+version: 1
+
+# All wall-clock times below are exchange-local.
+timezone: America/New_York
+
+signal:
+  # Features for as_of_date D may only use records with available_at <= D at this time.
+  # Set after the vendor's confirmed end-of-day publication window (see docs/DATA_ACCESS.md).
+  cutoff_time: "20:00"
+
+execution:
+  # A prediction for D is first actionable in the session `session_offset` sessions after D.
+  session_offset: 1
+  # Assumed fill: closing auction (market-on-close) of the execution session.
+  price: close
+
+label:
+  horizon_trading_days: 20
+  # Excess total return: (security closeadj return) - (benchmark closeadj return)
+  # from the execution-session close to the close `horizon_trading_days` sessions later.
+  return_type: total_return
+  benchmark: SPY
+
+universe:
+  # Evaluated at each as_of_date using only information available at the signal cutoff.
+  exchanges: [NYSE, NASDAQ, NYSEMKT]
+  security_categories: ["Domestic Common Stock"]
+  min_close_price: 5.0
+  min_median_dollar_volume: 5000000
+  dollar_volume_window_sessions: 20
+  min_history_sessions: 252
+  # Securities that delist later remain in historical universes (survivorship-bias control).
+  include_subsequently_delisted: true
